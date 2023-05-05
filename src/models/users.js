@@ -3,20 +3,16 @@ module.exports = (sequelize, DataTypes) => {
     "Users",
     {
       id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+        type: DataTypes.INTEGER,
         primaryKey: true,
       },
-      name: {
+      username: {
         type: DataTypes.STRING,
         allowNull: false,
       },
       password: {
         type: DataTypes.STRING,
-      },
-      role: {
-        type: DataTypes.STRING,
-      },
+      }
     },
     {
       timestamps: false,
