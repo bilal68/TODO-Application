@@ -1,0 +1,154 @@
+{
+	"info": {
+		"_postman_id": "3c1af48f-f222-4085-b4dd-0dc70fa90909",
+		"name": "Buying Frenzy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21948871"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/health-check",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"health-check"
+					],
+					"query": [
+						{
+							"key": "day",
+							"value": "sunday",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Restaurants",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/restaurants?day=friday&from=14:00&to=22:30",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"restaurants"
+					],
+					"query": [
+						{
+							"key": "day",
+							"value": "friday"
+						},
+						{
+							"key": "from",
+							"value": "14:00"
+						},
+						{
+							"key": "to",
+							"value": "22:30"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FETCH Restaurants Havin X #ofDishes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/fetch/restaurants/:numberOfDishes?minPrice=5.0&maxPrice=15.0",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"fetch",
+						"restaurants",
+						":numberOfDishes"
+					],
+					"query": [
+						{
+							"key": "minPrice",
+							"value": "5.0"
+						},
+						{
+							"key": "maxPrice",
+							"value": "15.0"
+						}
+					],
+					"variable": [
+						{
+							"key": "numberOfDishes",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SEARCH Restaurants & dishNames",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/:search",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						":search"
+					],
+					"variable": [
+						{
+							"key": "search",
+							"value": "Oli"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PURCHASE a Dish",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": \"000f2879-adf2-43b6-ba41-b71c63319fdc\",\r\n    \"menuId\": \"0002a48c-debc-4aa4-9df4-9c416d59a97a\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/purchase",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"purchase"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
