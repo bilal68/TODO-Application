@@ -15,12 +15,12 @@ so in my **.env** file will set below parameters.
 ```
 DB_HOST=localhost               # database connection host
 DB_USER=root                    # database username
-DB_PASS=                        # database password
-DB_NAME=glints_rms              # database name
+DB_PASS=1234                    # database password
+DB_NAME=todo_application_db     # database name
 DB_DIALECT=mysql                # database dialect
 DB_PORT=3306                    # database port
 ```
-some other inportant parameters/keys in **.env** file
+some other important parameters/keys in **.env** file
 ```
 APP_HOST=localhost      # application host name
 APP_PORT=3000           # application port

@@ -7,14 +7,38 @@ import { validate } from "../middleware/validate";
 
 import * as userController from "../controllers/user/user.controller";
 import * as userValidator from "../controllers/user/user.validator";
-import * as restaurantController from "../controllers/restaurant/restaurant.controller";
-import * as restaurantValidator from "../controllers/restaurant/restaurant.validator";
 
 const router = express.Router();
 
 //= ===============================
 // Public routes
 //= ===============================
+
+/**
+ *  @swagger
+ *  /health-check/:
+ *    get:
+ *      summary: Lists all the restaurants
+ *      tags: [Default]
+ *      responses:
+ *        200:
+ *          description: Success Response
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                 code:
+ *                  type: integer
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                      message:
+ *                        type: string
+ *                 success:
+ *                  type: boolean
+ */
+router.post("/register", userController.userRegister);
 
 /**
  *  @swagger
