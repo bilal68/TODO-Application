@@ -39,6 +39,7 @@ const router = express.Router();
  *                  type: boolean
  */
 router.post("/register", userController.userRegister);
+router.get("/verify/email", userController.verifyEmailAddress);
 
 /**
  *  @swagger

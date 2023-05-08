@@ -45,7 +45,7 @@ Object.keys(db).forEach((modelName) => {
     db[modelName].associate(db);
   }
 });
-sequelize.sync({ force: true, alter: true }); //use to create model directly
+sequelize.sync({ force: false, alter: true }); //use to create model directly
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
