@@ -60,3 +60,19 @@ export const verifyEmailAddress = async (req, res) => {
     return errorResponse(req, res, error.message);
   }
 };
+export const resetPassword = async (req, res) => {
+  try {
+    const { password } = req.body;
+    const newPassword = await generatePasswordHash(password);
+    let result = await model.user.update(
+      { password: newPassword },
+      { where: { id: req.user.userId }, returning: true }
+    );
+
+    return successResponse(req, res, {
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    return errorResponse(req, res, error.message);
+  }
+};
