@@ -10,10 +10,9 @@ import { comparePasswordHash } from "../helpers";
 passport.use(
   new GoogleStrategy(
     {
-      clientID:
-        "1036345270095-4tn6uso6ufpbglsfinp5084v5p42vbdl.apps.googleusercontent.com",
-      clientSecret: "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",
-      callbackURL: "http://localhost:3000/auth/google/callback",
+      clientID: process.env.CLIENT_ID,
+      clientSecret: process.env.CLIENT_SECRET,
+      callbackURL: process.env.CALLBACK_URL,
       passReqToCallback: true,
     },
     function (request, accessToken, refreshToken, profile, cb) {
