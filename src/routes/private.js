@@ -4,9 +4,10 @@ import passport from "passport";
 import { validate } from "../middleware/validate";
 
 import * as userController from "../controllers/user/user.controller";
+import * as taskController from "../controllers/task/task.controller";
+
 import * as userValidator from "../controllers/user/user.validator";
-import * as restaurantController from "../controllers/restaurant/restaurant.controller";
-import * as restaurantValidator from "../controllers/restaurant/restaurant.validator";
+import * as taskValidator from "../controllers/task/task.validator";
 
 const router = express.Router();
 
@@ -38,12 +39,18 @@ const router = express.Router();
  *                 success:
  *                  type: boolean
  */
-router.get(
-  "/protected",
+router.patch(
+  "/reset/password",
   passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    res.send("welcome");
-  }
+  validate(userValidator.resetPassword, "body"),
+  userController.resetPassword
+);
+
+router.post(
+  "/task",
+  passport.authenticate("jwt", { session: false }),
+  validate(taskValidator.create, "body"),
+  taskController.create
 );
 
 module.exports = router;
