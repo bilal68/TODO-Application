@@ -3,7 +3,8 @@ const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const LocalStrategy = require("passport-local").Strategy;
 
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
-import { User } from "../models";
+import * as model from "../models";
+import { comparePasswordHash } from "../helpers";
 
 // Set up the Google OAuth2 strategy
 passport.use(
@@ -22,19 +23,23 @@ passport.use(
 );
 
 passport.use(
-  new LocalStrategy(function (username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
-      if (err) {
-        return done(err);
-      }
+  new LocalStrategy(async (email, password, cb) => {
+    try {
+      const user = await model.user.findOne({ where: { email } });
       if (!user) {
-        return done(null, false);
+        throw new Error("Incorrect email");
       }
-      if (!user.verifyPassword(password)) {
-        return done(null, false);
+      const isPasswordValid = await comparePasswordHash(
+        password,
+        user.password
+      );
+      if (!isPasswordValid) {
+        throw new Error("Incorrect password");
       }
-      return done(null, user);
-    });
+      return cb(null, user);
+    } catch (error) {
+      return cb(error);
+    }
   })
 );
 

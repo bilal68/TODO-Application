@@ -39,6 +39,31 @@ const router = express.Router();
  *                  type: boolean
  */
 router.post("/register", userController.userRegister);
+
+/**
+ *  @swagger
+ *  /health-check/:
+ *    get:
+ *      summary: Lists all the restaurants
+ *      tags: [Default]
+ *      responses:
+ *        200:
+ *          description: Success Response
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                 code:
+ *                  type: integer
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                      message:
+ *                        type: string
+ *                 success:
+ *                  type: boolean
+ */
 router.get("/verify/email", userController.verifyEmailAddress);
 
 /**
@@ -66,49 +91,7 @@ router.get("/verify/email", userController.verifyEmailAddress);
  *                  type: boolean
  */
 router.get("/health-check", userController.healthCheck);
-/**
- *  @swagger
- *  /restaurants/:
- *    get:
- *      summary: Lists all the restaurants
- *      tags: [Restaurants]
- *      parameters:
- *        - name: 'day'
- *          in: 'query'
- *          schema:
- *            type: string
- *            format: 'sunday'
- *        - name: 'from'
- *          in: 'query'
- *          schema:
- *            type: 'time'
- *            format: '09:00'
- *        - name: 'to'
- *          in: 'query'
- *          schema:
- *            type: 'time'
- *            format: '20:00'
- *      responses:
- *        200:
- *          description: Success Response
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                 code:
- *                  type: integer
- *                 data:
- *                   type: array
- *                   items:
- *                   properties:
- *                      restaurantName:
- *                        type: string
- *                      cashBalance:
- *                        type: integer
- *                 success:
- *                  type: boolean
- */
+
 // Define the OAuth2 route
 router.get(
   "/auth/google",

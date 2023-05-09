@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import bcrypt from "bcrypt";
 
 export const successResponse = (req, res, data, code = 200) =>
   res.send({
@@ -14,7 +14,7 @@ export const errorResponse = (
   code = 500,
   error = {}
 ) =>
-  res.status(500).json({
+  res.status(code).json({
     code,
     errorMessage,
     error,
@@ -38,8 +38,12 @@ export const validateFields = (object, fields) => {
   return errors.length ? `${errors.join(", ")} are required fields.` : "";
 };
 
-export const generateMd5Hash = (string) => {
-  return crypto.createHash("md5").update(string).digest("hex");
+export const generatePasswordHash = async (password) => {
+  return await bcrypt.hash(password, 10);
+};
+
+export const comparePasswordHash = async (password, savedPassword) => {
+  return bcrypt.compare(password, savedPassword);
 };
 
 export const verificationCode = () => {

@@ -3,8 +3,8 @@ import { sendEmail } from "../../services/email";
 import {
   successResponse,
   errorResponse,
-  generateMd5Hash,
   verificationCode,
+  generatePasswordHash,
 } from "../../helpers";
 const moment = require("moment");
 
@@ -20,7 +20,7 @@ export const userRegister = async (req, res) => {
   try {
     const { password } = req.body;
 
-    req.body.password = generateMd5Hash(password);
+    req.body.password = await generatePasswordHash(password);
     req.body["verification_code"] = verificationCode();
 
     // send email to user
