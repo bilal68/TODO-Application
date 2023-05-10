@@ -103,6 +103,10 @@ export const deleteTaskById = async (req, res) => {
 export const update = async (req, res) => {
   const t = await model.sequelize.transaction();
   try {
+    const targetTask = await task.findOne({
+      where: { id: req.params.id },
+      include: [{ model: attachment, as: "Attachments" }],
+    });
     const [, updatedRows] = await task.update(
       {
         ...req.body,
@@ -111,19 +115,21 @@ export const update = async (req, res) => {
       { transaction: t }
     );
     if (req.files && req.files.length > 0) {
-      const attachments = [];
-      for (let file of req.files) {
-        if (!fs.existsSync(path.join("./uploads", file.originalname)))
-          attachments.push({
-            fk_task_id: req.params.id,
-            original_name: file.originalname,
-            file_name: file.filename,
-          });
-      }
+      const attachments = req.files.map((file) => ({
+        fk_task_id: req.params.id,
+        original_name: file.originalname,
+        file_name: file.filename,
+      }));
       await Promise.all(
         attachments.map(async (file) => {
+          const existingAttachment = targetTask.Attachments.find(
+            (a) => a.original_name === file.original_name
+          );
           await attachment.upsert(
             {
+              ...(existingAttachment && {
+                id: existingAttachment.id,
+              }),
               ...file,
             },
             { transaction: t }
@@ -134,13 +140,13 @@ export const update = async (req, res) => {
     if ((!updatedRows || updatedRows === 0) && req.files.length === 0) {
       throw new Error("Task not found");
     }
+    await t.commit();
     const result = await task.findOne({
       where: { id: req.params.id },
       include: [{ model: attachment, as: "Attachments" }],
     });
-    await t.commit();
     return successResponse(req, res, {
-      message: "Task created successfully",
+      message: "Task updated successfully",
       data: result,
     });
   } catch (error) {
