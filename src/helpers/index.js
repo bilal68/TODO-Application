@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import multer from "multer";
 
 export const successResponse = (req, res, data, code = 200) =>
   res.send({
@@ -22,12 +23,6 @@ export const errorResponse = (
     success: false,
   });
 
-export const validateEmail = (email) => {
-  const re =
-    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(String(email).toLowerCase());
-};
-
 export const validateFields = (object, fields) => {
   const errors = [];
   fields.forEach((f) => {
@@ -48,4 +43,16 @@ export const comparePasswordHash = async (password, savedPassword) => {
 
 export const verificationCode = () => {
   return Math.floor(100000 + Math.random() * 900000);
+};
+
+export const diskStorage = () => {
+  return multer.diskStorage({
+    destination: "uploads/",
+    filename: (req, file, cb) => {
+      // Generate a unique filename for the uploaded file
+      // const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const filename = file.originalname;
+      cb(null, filename);
+    },
+  });
 };

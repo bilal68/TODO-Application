@@ -47,7 +47,7 @@ export const verifyEmailAddress = async (req, res) => {
     const { verificationCode } = req.query;
 
     let result = await model.user.update(
-      { is_verified: true },
+      { is_verified: true, verification_code: null },
       { where: { verification_code: verificationCode }, returning: true }
     );
     if (!result) {

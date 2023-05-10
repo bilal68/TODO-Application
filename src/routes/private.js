@@ -1,6 +1,7 @@
 import express from "express";
 import passport from "passport";
 
+import multer from "multer";
 import { validate } from "../middleware/validate";
 
 import * as userController from "../controllers/user/user.controller";
@@ -10,7 +11,8 @@ import * as userValidator from "../controllers/user/user.validator";
 import * as taskValidator from "../controllers/task/task.validator";
 
 const router = express.Router();
-
+const { diskStorage } = require('../helpers');
+const upload = multer({ storage: diskStorage() });
 //= ===============================
 // Private routes
 //= ===============================
@@ -49,8 +51,36 @@ router.patch(
 router.post(
   "/task",
   passport.authenticate("jwt", { session: false }),
+  upload.array("attachments", 5),
   validate(taskValidator.create, "body"),
   taskController.create
+);
+router.get(
+  "/task/:id(\\d+)",
+  passport.authenticate("jwt", { session: false }),
+  validate(taskValidator.taskById, "params"),
+  taskController.getTaskById
+);
+
+router.get(
+  "/task",
+  passport.authenticate("jwt", { session: false }),
+  taskController.getTaskList
+);
+
+router.delete(
+  "/task/:id(\\d+)",
+  passport.authenticate("jwt", { session: false }),
+  validate(taskValidator.taskById, "params"),
+  taskController.deleteTaskById
+);
+
+router.put(
+  "/task/:id(\\d+)",
+  passport.authenticate("jwt", { session: false }),
+  upload.array("attachments", 5),
+  validate(taskValidator.taskById, "params"),
+  taskController.update
 );
 
 module.exports = router;
