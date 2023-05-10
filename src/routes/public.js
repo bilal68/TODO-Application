@@ -1,8 +1,6 @@
 import express from "express";
 import passport from "passport";
 
-import { generateToken } from "../config/jwt";
-
 import { validate } from "../middleware/validate";
 
 import * as userController from "../controllers/user/user.controller";
@@ -43,9 +41,9 @@ router.get("/health-check", userController.healthCheck);
 
 /**
  *  @swagger
- *  /health-check/:
- *    get:
- *      summary: Lists all the restaurants
+ *  /register:
+ *    post:
+ *      summary: Register a user
  *      tags: [Default]
  *      responses:
  *        200:
@@ -73,9 +71,9 @@ router.post(
 
 /**
  *  @swagger
- *  /health-check/:
+ *  /verify/email:
  *    get:
- *      summary: Lists all the restaurants
+ *      summary: Verify user email
  *      tags: [Default]
  *      responses:
  *        200:
@@ -101,7 +99,30 @@ router.get(
   userController.verifyEmailAddress
 );
 
-// Define the OAuth2 route
+/**
+ *  @swagger
+ *  /auth/google:
+ *    get:
+ *      summary: oAuth2 for google
+ *      tags: [Default]
+ *      responses:
+ *        200:
+ *          description: Success Response
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                 code:
+ *                  type: integer
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                      message:
+ *                        type: string
+ *                 success:
+ *                  type: boolean
+ */
 router.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -111,18 +132,13 @@ router.get(
   "/auth/google/callback",
   passport.authenticate("google", { session: false }),
   authController.login
-  // (req, res) => {
-  //   // Generate a JWT token and send it to the client
-  //   const token = generateToken({ userId: req.user.id, loginType: "oAuth2" });
-  //   res.json(token);
-  // }
 );
 
 /**
  *  @swagger
- *  /health-check/:
- *    get:
- *      summary: Lists all the restaurants
+ *  /login:
+ *    post:
+ *      summary: Login request
  *      tags: [Default]
  *      responses:
  *        200:
