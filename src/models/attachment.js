@@ -1,20 +1,28 @@
 module.exports = (sequelize, DataTypes) => {
-  const Attachments= sequelize.define(
+  const Attachment = sequelize.define(
     "attachment",
     {
-      name: {
+      original_name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      file_name: {
         type: DataTypes.STRING,
         allowNull: false,
       },
     },
     {
       timestamps: true,
-      freezeTableName: true
+      freezeTableName: true,
     }
   );
-  Attachments.associate = function (models) {
+  Attachment.associate = function (models) {
     // associations can be defined here
-    Attachments.belongsTo(models.task);
+    Attachment.belongsTo(models.task, {
+      foreignKey: "fk_task_id",
+      as: "Task",
+      onDelete: 'CASCADE',
+    });
   };
-  return Attachments;
+  return Attachment;
 };

@@ -15,9 +15,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       completion_date: {
         type: DataTypes.DATE,
+        defaultValue: null,
       },
       completion_status: {
         type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
     },
     {
@@ -29,9 +31,15 @@ module.exports = (sequelize, DataTypes) => {
     // associations can be defined here
     Task.hasMany(models.attachment, {
       foreignKey: "fk_task_id",
-      as: "Task",
+      as: "Attachments",
+      onDelete: 'CASCADE',
+      hooks: true, 
     });
-    Task.belongsTo(models.user);
+    Task.belongsTo(models.user, {
+      foreignKey: 'fk_user_id',
+      as: 'User',
+    });
+    
   };
 
   return Task;
