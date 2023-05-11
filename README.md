@@ -49,7 +49,7 @@ Migration will add index on table and seeds will add data in the DB
 
 # Other Information about setup/commands
 ## Routing files
-> Currently I have added 1 routing file 
 ```
 > public.js   # public routing access everyone can access this APIs
+> private.js  # private routing access only by the registered users
 ```

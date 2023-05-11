@@ -24,9 +24,11 @@ passport.use(
 passport.use(
   new LocalStrategy(async (email, password, cb) => {
     try {
-      const user = await model.user.findOne({ where: { email } });
+      const user = await model.user.findOne({
+        where: { email, is_verified: true, user_type: "LOCAL" },
+      });
       if (!user) {
-        throw new Error("Incorrect email");
+        throw new Error("User not found!");
       }
       const isPasswordValid = await comparePasswordHash(
         password,

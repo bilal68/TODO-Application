@@ -66,7 +66,7 @@ router.get("/health-check", userController.healthCheck);
 router.post(
   "/register",
   validate(userValidator.userRegister, "body"),
-  userController.userRegister
+  authController.userRegister
 );
 
 /**
@@ -131,7 +131,7 @@ router.get(
 router.get(
   "/auth/google/callback",
   passport.authenticate("google", { session: false }),
-  authController.login
+  authController.handleOAuthCallback
 );
 
 /**
