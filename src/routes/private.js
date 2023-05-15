@@ -157,9 +157,7 @@ router.patch(
  *           type: string
  *   securitySchemes:
  *     BearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
+ *       $ref: '#/components/securitySchemes/BearerAuth'
  */
 
 router.post(
@@ -367,9 +365,7 @@ router.delete(
  *             type: file
  *   securitySchemes:
  *     BearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
+ *       $ref: '#/components/securitySchemes/BearerAuth'
  */
 
 router.put(
@@ -380,4 +376,44 @@ router.put(
   taskController.update
 );
 
+/**
+ * @swagger
+ * /download/task/attachment/{id}:
+ *   get:
+ *     summary: Download attachments for a task
+ *     tags: [Tasks]
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: Task ID
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Success Response
+ *         content:
+ *           application/zip:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *     security:
+ *       - BearerAuth: []
+ *
+ * components:
+ *   schemas:
+ *     ErrorResponse:
+ *       $ref: '#/components/schemas/ErrorResponse'
+ *   securitySchemes:
+ *     BearerAuth:
+ *       $ref: '#/components/securitySchemes/BearerAuth'
+ */
+
+
+router.get(
+  "/download/task/attachment/:id(\\d+)",
+  passport.authenticate("jwt", { session: false }),
+  validate(taskValidator.taskById, "params"),
+  taskController.getAttachmentsOfTaskById
+);
 module.exports = router;

@@ -2,7 +2,7 @@ import * as model from "../../models";
 import fs from "fs";
 import path from "path";
 import { successResponse, errorResponse } from "../../helpers";
-import { log } from "console";
+const archiver = require("archiver");
 
 const { task, attachment } = model;
 
@@ -74,6 +74,38 @@ export const getTaskById = async (req, res) => {
       message: "Success",
       data: result,
     });
+  } catch (error) {
+    return errorResponse(req, res, error.message);
+  }
+};
+export const getAttachmentsOfTaskById = async (req, res) => {
+  try {
+    let result = await task.findOne({
+      where: { fk_user_id: req.user.userId, id: req.params.id },
+      include: [{ model: attachment, as: "Attachments" }],
+    });
+    if (!result) throw new Error("Task not found");
+    if (result["Attachments"] && result["Attachments"].length > 0) {
+      const archive = archiver("zip", { zlib: { level: 9 } });
+      res.setHeader("Content-Type", "application/zip");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="task_${req.params.id}_attachments.zip"`
+      );
+      archive.pipe(res);
+      result["Attachments"].forEach((attachment) => {
+        const filePath = path.join("./uploads", attachment.file_name);
+        if (fs.existsSync(filePath)) {
+          const fileStats = fs.statSync(filePath);
+          // Add the file to the zip archive
+          archive.append(fs.createReadStream(filePath), {
+            name: attachment.file_name,
+            size: fileStats.size,
+          });
+        }
+      });
+      archive.finalize();
+    }
   } catch (error) {
     return errorResponse(req, res, error.message);
   }
