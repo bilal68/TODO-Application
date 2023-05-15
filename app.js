@@ -1,7 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
 
-
 import bodyParser from "body-parser";
 import cors from "cors";
 
@@ -25,6 +24,22 @@ const options = {
       version: "1.0.0",
     },
   },
+  // swaggerDefinition: {
+  //   tags: [
+  //     {
+  //       name: "Default",
+  //       description: "Default operations",
+  //     },
+  //     {
+  //       name: "Auth",
+  //       description: "Authentication operations",
+  //     },
+  //     {
+  //       name: "User",
+  //       description: "User operations",
+  //     },
+  //   ],
+  // },
   apis: ["./src/routes/*.js"], // files containing annotations as above
 };
 

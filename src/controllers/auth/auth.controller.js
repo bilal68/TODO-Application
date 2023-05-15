@@ -1,9 +1,11 @@
 import * as model from "../../models";
 import { generateToken } from "../../config/jwt";
+import { sendEmail } from "../../services/email";
 import {
   successResponse,
   errorResponse,
   generatePasswordHash,
+  verificationCode,
 } from "../../helpers";
 
 export const handleOAuthCallback = async (req, res, next) => {
@@ -51,7 +53,7 @@ const createUserInDb = async (data, localUserFlag = true) => {
 
     // send email to user
     if (localUserFlag) {
-      data.password = await generatePasswordHash(password);
+      data.password = await generatePasswordHash(data.password);
       data["verification_code"] = verificationCode();
       await sendEmail(
         data.email,

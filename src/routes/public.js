@@ -44,7 +44,26 @@ router.get("/health-check", userController.healthCheck);
  *  /register:
  *    post:
  *      summary: Register a user
- *      tags: [Default]
+ *      tags: [User]
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                email:
+ *                  type: string
+ *                  required: true
+ *                password:
+ *                  type: string
+ *                  required: true
+ *                first_name:
+ *                  type: string
+ *                  required: true
+ *                last_name:
+ *                  type: string
+ *                  required: true
  *      responses:
  *        200:
  *          description: Success Response
@@ -53,15 +72,17 @@ router.get("/health-check", userController.healthCheck);
  *              schema:
  *                type: object
  *                properties:
- *                 code:
- *                  type: integer
- *                 data:
- *                   type: object
- *                   properties:
+ *                  code:
+ *                    type: integer
+ *                  data:
+ *                    type: object
+ *                    properties:
  *                      message:
  *                        type: string
- *                 success:
- *                  type: boolean
+ *                      data:
+ *                        type: object
+ *                  success:
+ *                    type: boolean
  */
 router.post(
   "/register",
@@ -74,7 +95,14 @@ router.post(
  *  /verify/email:
  *    get:
  *      summary: Verify user email
- *      tags: [Default]
+ *      tags: [User]
+ *      parameters:
+ *        - name: verificationCode
+ *          in: query
+ *          description: email verification code
+ *          required: true
+ *          schema:
+ *            type: integer
  *      responses:
  *        200:
  *          description: Success Response
@@ -83,15 +111,15 @@ router.post(
  *              schema:
  *                type: object
  *                properties:
- *                 code:
- *                  type: integer
- *                 data:
- *                   type: object
- *                   properties:
+ *                  code:
+ *                    type: integer
+ *                  data:
+ *                    type: object
+ *                    properties:
  *                      message:
  *                        type: string
- *                 success:
- *                  type: boolean
+ *                  success:
+ *                    type: boolean
  */
 router.get(
   "/verify/email",
@@ -104,7 +132,7 @@ router.get(
  *  /auth/google:
  *    get:
  *      summary: oAuth2 for google
- *      tags: [Default]
+ *      tags: [Auth]
  *      responses:
  *        200:
  *          description: Success Response
@@ -138,8 +166,21 @@ router.get(
  *  @swagger
  *  /login:
  *    post:
- *      summary: Login request
- *      tags: [Default]
+ *      summary: Register a user
+ *      tags: [Auth]
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                username:
+ *                  type: string
+ *                  required: true
+ *                password:
+ *                  type: string
+ *                  required: true
  *      responses:
  *        200:
  *          description: Success Response
@@ -148,15 +189,15 @@ router.get(
  *              schema:
  *                type: object
  *                properties:
- *                 code:
- *                  type: integer
- *                 data:
- *                   type: object
- *                   properties:
+ *                  code:
+ *                    type: integer
+ *                  data:
+ *                    type: object
+ *                    properties:
  *                      message:
  *                        type: string
- *                 success:
- *                  type: boolean
+ *                  success:
+ *                    type: boolean
  */
 router.post(
   "/login",

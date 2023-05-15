@@ -17,11 +17,11 @@ export const verifyEmailAddress = async (req, res) => {
   try {
     const { verificationCode } = req.query;
 
-    let result = await model.user.update(
+    const [, updatedRows] = await model.user.update(
       { is_verified: true, verification_code: null },
       { where: { verification_code: verificationCode }, returning: true }
     );
-    if (!result) {
+    if (updatedRows !== undefined && updatedRows === 0) {
       throw new Error("User not found");
     }
     return successResponse(req, res, {

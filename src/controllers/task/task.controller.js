@@ -2,12 +2,17 @@ import * as model from "../../models";
 import fs from "fs";
 import path from "path";
 import { successResponse, errorResponse } from "../../helpers";
+import { log } from "console";
 
 const { task, attachment } = model;
 
 export const create = async (req, res) => {
   const t = await model.sequelize.transaction();
   try {
+    let count = await task.count({
+      fk_user_id: req.user.userId,
+    });
+    if (count >= 50) throw Error("User list full!");
     let result = await task.create(
       {
         fk_user_id: req.user.userId,
@@ -85,14 +90,13 @@ export const deleteTaskById = async (req, res) => {
     if (result["Attachments"] && result["Attachments"].length > 0) {
       result["Attachments"].forEach((attachment) => {
         const filePath = path.join("./uploads", attachment.file_name);
-        fs.unlinkSync(filePath);
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
       });
     }
     await result.destroy({ transaction: t });
     await t.commit();
     return successResponse(req, res, {
       message: "Success",
-      data: result,
     });
   } catch (error) {
     await t.rollback();
