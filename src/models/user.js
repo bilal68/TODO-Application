@@ -22,6 +22,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
+      user_type: {
+        type: DataTypes.ENUM({
+          values: ['LOCAL', 'OAUTH2']
+        }),
+        defaultValue: "LOCAL",
+      },
     },
     {
       timestamps: true,

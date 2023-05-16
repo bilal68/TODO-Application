@@ -2,12 +2,17 @@ import * as model from "../../models";
 import fs from "fs";
 import path from "path";
 import { successResponse, errorResponse } from "../../helpers";
+const archiver = require("archiver");
 
 const { task, attachment } = model;
 
 export const create = async (req, res) => {
   const t = await model.sequelize.transaction();
   try {
+    let count = await task.count({
+      fk_user_id: req.user.userId,
+    });
+    if (count >= 50) throw Error("User list full!");
     let result = await task.create(
       {
         fk_user_id: req.user.userId,
@@ -73,6 +78,38 @@ export const getTaskById = async (req, res) => {
     return errorResponse(req, res, error.message);
   }
 };
+export const getAttachmentsOfTaskById = async (req, res) => {
+  try {
+    let result = await task.findOne({
+      where: { fk_user_id: req.user.userId, id: req.params.id },
+      include: [{ model: attachment, as: "Attachments" }],
+    });
+    if (!result) throw new Error("Task not found");
+    if (result["Attachments"] && result["Attachments"].length > 0) {
+      const archive = archiver("zip", { zlib: { level: 9 } });
+      res.setHeader("Content-Type", "application/zip");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="task_${req.params.id}_attachments.zip"`
+      );
+      archive.pipe(res);
+      result["Attachments"].forEach((attachment) => {
+        const filePath = path.join("./uploads", attachment.file_name);
+        if (fs.existsSync(filePath)) {
+          const fileStats = fs.statSync(filePath);
+          // Add the file to the zip archive
+          archive.append(fs.createReadStream(filePath), {
+            name: attachment.file_name,
+            size: fileStats.size,
+          });
+        }
+      });
+      archive.finalize();
+    }
+  } catch (error) {
+    return errorResponse(req, res, error.message);
+  }
+};
 
 export const deleteTaskById = async (req, res) => {
   const t = await model.sequelize.transaction();
@@ -85,14 +122,13 @@ export const deleteTaskById = async (req, res) => {
     if (result["Attachments"] && result["Attachments"].length > 0) {
       result["Attachments"].forEach((attachment) => {
         const filePath = path.join("./uploads", attachment.file_name);
-        fs.unlinkSync(filePath);
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
       });
     }
     await result.destroy({ transaction: t });
     await t.commit();
     return successResponse(req, res, {
       message: "Success",
-      data: result,
     });
   } catch (error) {
     await t.rollback();
@@ -103,6 +139,10 @@ export const deleteTaskById = async (req, res) => {
 export const update = async (req, res) => {
   const t = await model.sequelize.transaction();
   try {
+    const targetTask = await task.findOne({
+      where: { id: req.params.id },
+      include: [{ model: attachment, as: "Attachments" }],
+    });
     const [, updatedRows] = await task.update(
       {
         ...req.body,
@@ -111,19 +151,21 @@ export const update = async (req, res) => {
       { transaction: t }
     );
     if (req.files && req.files.length > 0) {
-      const attachments = [];
-      for (let file of req.files) {
-        if (!fs.existsSync(path.join("./uploads", file.originalname)))
-          attachments.push({
-            fk_task_id: req.params.id,
-            original_name: file.originalname,
-            file_name: file.filename,
-          });
-      }
+      const attachments = req.files.map((file) => ({
+        fk_task_id: req.params.id,
+        original_name: file.originalname,
+        file_name: file.filename,
+      }));
       await Promise.all(
         attachments.map(async (file) => {
+          const existingAttachment = targetTask.Attachments.find(
+            (a) => a.original_name === file.original_name
+          );
           await attachment.upsert(
             {
+              ...(existingAttachment && {
+                id: existingAttachment.id,
+              }),
               ...file,
             },
             { transaction: t }
@@ -134,13 +176,13 @@ export const update = async (req, res) => {
     if ((!updatedRows || updatedRows === 0) && req.files.length === 0) {
       throw new Error("Task not found");
     }
+    await t.commit();
     const result = await task.findOne({
       where: { id: req.params.id },
       include: [{ model: attachment, as: "Attachments" }],
     });
-    await t.commit();
     return successResponse(req, res, {
-      message: "Task created successfully",
+      message: "Task updated successfully",
       data: result,
     });
   } catch (error) {
@@ -148,3 +190,4 @@ export const update = async (req, res) => {
     return errorResponse(req, res, error.message);
   }
 };
+
