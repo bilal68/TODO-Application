@@ -136,3 +136,35 @@ export const getMaxTasksCompletedDate = async (req, res) => {
     return errorResponse(req, res, error.message);
   }
 };
+
+export const getTasksPerDayOfWeek = async (req, res) => {
+  try {
+    const tasksPerDayOfWeek = await task.findAll({
+      attributes: [
+        [sequelize.fn("DAYNAME", sequelize.col("task.createdAt")), "dayOfWeek"],
+        [sequelize.fn("COUNT", sequelize.col("task.id")), "taskCount"],
+      ],
+      group: [sequelize.fn("DAYNAME", sequelize.col("task.createdAt"))],
+      include: [
+        {
+          model: user,
+          as: "User",
+          attributes: [],
+          where: {
+            createdAt: {
+              [Op.lte]: sequelize.col("task.createdAt"),
+            },
+          },
+        },
+      ],
+    });
+    return successResponse(req, res, {
+      message: "Success",
+      data: {
+        tasksPerDayOfWeek: tasksPerDayOfWeek,
+      },
+    });
+  } catch (error) {
+    return errorResponse(req, res, error.message);
+  }
+};

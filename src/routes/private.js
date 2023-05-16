@@ -576,4 +576,40 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   reportController.getMaxTasksCompletedDate
 );
+
+/**
+ *  @swagger
+ *  /report/tasksPerDayOfWeek:
+ *    get:
+ *      summary: Get the tasks per day of the week
+ *      tags: [Reports]
+ *      responses:
+ *        200:
+ *          description: Success Response
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/TasksPerDayOfWeek'
+ *      security:
+ *       - BearerAuth: []
+ *
+ * components:
+ *   schemas:
+ *     TasksPerDayOfWeek:
+ *       type: object
+ *       properties:
+ *         tasksPerDayOfWeek:
+ *           type: integer
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+router.get(
+  "/report/tasksPerDayOfWeek",
+  passport.authenticate("jwt", { session: false }),
+  reportController.getTasksPerDayOfWeek
+);
 module.exports = router;
