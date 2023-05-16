@@ -504,4 +504,40 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   reportController.getAveragePerDayCompletedTasks
 );
+
+/**
+ *  @swagger
+ *  /report/tasksNotCompletedOnTime:
+ *    get:
+ *      summary: Get the average completed tasks for a day
+ *      tags: [Reports]
+ *      responses:
+ *        200:
+ *          description: Success Response
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/TasksNotCompletedOnTimeCount'
+ *      security:
+ *       - BearerAuth: []
+ *
+ * components:
+ *   schemas:
+ *     TasksNotCompletedOnTimeCount:
+ *       type: object
+ *       properties:
+ *         averageTasksCompletedPerDay:
+ *           type: integer
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+router.get(
+  "/report/tasksNotCompletedOnTime",
+  passport.authenticate("jwt", { session: false }),
+  reportController.getTasksNotCompletedOnTimeCount
+);
 module.exports = router;

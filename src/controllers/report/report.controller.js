@@ -1,28 +1,28 @@
 import * as model from "../../models";
 import { successResponse, errorResponse } from "../../helpers";
 import moment from "moment";
-import { Op } from 'sequelize';
+import { Op } from "sequelize";
 
-const { task, user } = model;
+const { task, user, sequelize } = model;
 
 export const getTaskCounts = async (req, res) => {
   try {
     const taskCounts = await task.findOne({
       attributes: [
-        [model.sequelize.fn("count", model.sequelize.col("id")), "totalTasks"],
+        [sequelize.fn("count", sequelize.col("id")), "totalTasks"],
         [
-          model.sequelize.fn(
+          sequelize.fn(
             "sum",
-            model.sequelize.literal(
+            sequelize.literal(
               "CASE WHEN completion_status = true THEN 1 ELSE 0 END"
             )
           ),
           "completedTasks",
         ],
         [
-          model.sequelize.fn(
+          sequelize.fn(
             "sum",
-            model.sequelize.literal(
+            sequelize.literal(
               "CASE WHEN completion_status = false THEN 1 ELSE 0 END"
             )
           ),
@@ -70,6 +70,26 @@ export const getAveragePerDayCompletedTasks = async (req, res) => {
       message: "Success",
       data: {
         averageTasksCompletedPerDay: averageTasksCompletedPerDay,
+      },
+    });
+  } catch (error) {
+    return errorResponse(req, res, error.message);
+  }
+};
+
+export const getTasksNotCompletedOnTimeCount = async (req, res) => {
+  try {
+    const tasksNotCompletedOnTimeCount = await task.count({
+      where: {
+        completion_date: {
+          [Op.gt]: sequelize.col("due_date"),
+        },
+      },
+    });
+    return successResponse(req, res, {
+      message: "Success",
+      data: {
+        tasksNotCompletedOnTimeCount: tasksNotCompletedOnTimeCount,
       },
     });
   } catch (error) {
