@@ -170,33 +170,6 @@ router.post(
   validate(taskValidator.create, "body"),
   taskController.create
 );
-router.get(
-  "/task/:id(\\d+)",
-  passport.authenticate("jwt", { session: false }),
-  validate(taskValidator.taskById, "params"),
-  taskController.getTaskById
-);
-
-router.get(
-  "/task",
-  passport.authenticate("jwt", { session: false }),
-  taskController.getTaskList
-);
-
-router.delete(
-  "/task/:id(\\d+)",
-  passport.authenticate("jwt", { session: false }),
-  validate(taskValidator.taskById, "params"),
-  taskController.deleteTaskById
-);
-
-router.put(
-  "/task/:id(\\d+)",
-  passport.authenticate("jwt", { session: false }),
-  upload.array("attachments", 5),
-  validate(taskValidator.taskById, "params"),
-  taskController.update
-);
 
 /**
  *  @swagger
