@@ -96,3 +96,43 @@ export const getTasksNotCompletedOnTimeCount = async (req, res) => {
     return errorResponse(req, res, error.message);
   }
 };
+
+export const getMaxTasksCompletedDate = async (req, res) => {
+  try {
+    const maxTasksCompletedDate = await task.findOne({
+      attributes: [
+        [sequelize.fn("date", sequelize.col("completion_date")), "date"],
+        [sequelize.fn("count", sequelize.col("task.id")), "taskCount"],
+      ],
+      where: {
+        completion_date: {
+          [Op.ne]: null,
+        },
+        createdAt: {
+          [Op.gte]: sequelize.col("User.createdAt"),
+        },
+      },
+      include: [
+        {
+          model: user,
+          as: "User",
+          attributes: [],
+        },
+      ],
+      group: [sequelize.fn("date", sequelize.col("completion_date"))],
+      order: [[sequelize.literal("taskCount"), "DESC"]],
+      limit: 1,
+    });
+
+    const { date, taskCount } = maxTasksCompletedDate.toJSON();
+    return successResponse(req, res, {
+      message: "Success",
+      data: {
+        date: date,
+        taskCount: taskCount,
+      },
+    });
+  } catch (error) {
+    return errorResponse(req, res, error.message);
+  }
+};

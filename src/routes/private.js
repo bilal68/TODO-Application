@@ -526,7 +526,7 @@ router.get(
  *     TasksNotCompletedOnTimeCount:
  *       type: object
  *       properties:
- *         averageTasksCompletedPerDay:
+ *         tasksNotCompletedOnTimeCount:
  *           type: integer
  *   securitySchemes:
  *     BearerAuth:
@@ -539,5 +539,41 @@ router.get(
   "/report/tasksNotCompletedOnTime",
   passport.authenticate("jwt", { session: false }),
   reportController.getTasksNotCompletedOnTimeCount
+);
+
+/**
+ *  @swagger
+ *  /report/maxTasksCompletedDate:
+ *    get:
+ *      summary: Get the max tasks completed on a date
+ *      tags: [Reports]
+ *      responses:
+ *        200:
+ *          description: Success Response
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/MaxTasksCompletedDate'
+ *      security:
+ *       - BearerAuth: []
+ *
+ * components:
+ *   schemas:
+ *     MaxTasksCompletedDate:
+ *       type: object
+ *       properties:
+ *         maxTasksCompletedDate:
+ *           type: integer
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+router.get(
+  "/report/maxTasksCompletedDate",
+  passport.authenticate("jwt", { session: false }),
+  reportController.getMaxTasksCompletedDate
 );
 module.exports = router;
