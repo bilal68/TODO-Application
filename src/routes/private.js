@@ -504,4 +504,112 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   reportController.getAveragePerDayCompletedTasks
 );
+
+/**
+ *  @swagger
+ *  /report/tasksNotCompletedOnTime:
+ *    get:
+ *      summary: Get the average completed tasks for a day
+ *      tags: [Reports]
+ *      responses:
+ *        200:
+ *          description: Success Response
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/TasksNotCompletedOnTimeCount'
+ *      security:
+ *       - BearerAuth: []
+ *
+ * components:
+ *   schemas:
+ *     TasksNotCompletedOnTimeCount:
+ *       type: object
+ *       properties:
+ *         tasksNotCompletedOnTimeCount:
+ *           type: integer
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+router.get(
+  "/report/tasksNotCompletedOnTime",
+  passport.authenticate("jwt", { session: false }),
+  reportController.getTasksNotCompletedOnTimeCount
+);
+
+/**
+ *  @swagger
+ *  /report/maxTasksCompletedDate:
+ *    get:
+ *      summary: Get the max tasks completed on a date
+ *      tags: [Reports]
+ *      responses:
+ *        200:
+ *          description: Success Response
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/MaxTasksCompletedDate'
+ *      security:
+ *       - BearerAuth: []
+ *
+ * components:
+ *   schemas:
+ *     MaxTasksCompletedDate:
+ *       type: object
+ *       properties:
+ *         maxTasksCompletedDate:
+ *           type: integer
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+router.get(
+  "/report/maxTasksCompletedDate",
+  passport.authenticate("jwt", { session: false }),
+  reportController.getMaxTasksCompletedDate
+);
+
+/**
+ *  @swagger
+ *  /report/tasksPerDayOfWeek:
+ *    get:
+ *      summary: Get the tasks per day of the week
+ *      tags: [Reports]
+ *      responses:
+ *        200:
+ *          description: Success Response
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/TasksPerDayOfWeek'
+ *      security:
+ *       - BearerAuth: []
+ *
+ * components:
+ *   schemas:
+ *     TasksPerDayOfWeek:
+ *       type: object
+ *       properties:
+ *         tasksPerDayOfWeek:
+ *           type: integer
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+router.get(
+  "/report/tasksPerDayOfWeek",
+  passport.authenticate("jwt", { session: false }),
+  reportController.getTasksPerDayOfWeek
+);
 module.exports = router;
