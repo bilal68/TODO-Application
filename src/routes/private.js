@@ -6,6 +6,7 @@ import { validate } from "../middleware/validate";
 
 import * as userController from "../controllers/user/user.controller";
 import * as taskController from "../controllers/task/task.controller";
+import * as reportController from "../controllers/report/report.controller";
 
 import * as userValidator from "../controllers/user/user.validator";
 import * as taskValidator from "../controllers/task/task.validator";
@@ -157,7 +158,9 @@ router.patch(
  *           type: string
  *   securitySchemes:
  *     BearerAuth:
- *       $ref: '#/components/securitySchemes/BearerAuth'
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */
 
 router.post(
@@ -205,7 +208,9 @@ router.post(
  *       $ref: '#/components/schemas/TaskResponse'
  *   securitySchemes:
  *     BearerAuth:
- *       $ref: '#/components/securitySchemes/BearerAuth'
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */
 
 router.get(
@@ -246,7 +251,9 @@ router.get(
  *       $ref: '#/components/schemas/TaskResponse'
  *   securitySchemes:
  *     BearerAuth:
- *       $ref: '#/components/securitySchemes/BearerAuth'
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */
 
 router.get(
@@ -286,7 +293,9 @@ router.get(
  *       $ref: '#/components/schemas/ErrorResponse'
  *   securitySchemes:
  *     BearerAuth:
- *       $ref: '#/components/securitySchemes/BearerAuth'
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */
 
 router.delete(
@@ -365,7 +374,9 @@ router.delete(
  *             type: file
  *   securitySchemes:
  *     BearerAuth:
- *       $ref: '#/components/securitySchemes/BearerAuth'
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */
 
 router.put(
@@ -406,14 +417,91 @@ router.put(
  *       $ref: '#/components/schemas/ErrorResponse'
  *   securitySchemes:
  *     BearerAuth:
- *       $ref: '#/components/securitySchemes/BearerAuth'
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */
-
 
 router.get(
   "/download/task/attachment/:id(\\d+)",
   passport.authenticate("jwt", { session: false }),
   validate(taskValidator.taskById, "params"),
   taskController.getAttachmentsOfTaskById
+);
+
+/**
+ *  @swagger
+ *  /report/totalSumOfTasks:
+ *    get:
+ *      summary: Get the total count of tasks
+ *      tags: [Reports]
+ *      responses:
+ *        200:
+ *          description: Success Response
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/TotalTasksResponse'
+ *      security:
+ *       - BearerAuth: []
+ *
+ * components:
+ *   schemas:
+ *     TotalTasksResponse:
+ *       type: object
+ *       properties:
+ *         totalTasks:
+ *           type: integer
+ *         completedTasks:
+ *           type: integer
+ *         remainingTasks:
+ *           type: integer
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+router.get(
+  "/report/totalSumOfTasks",
+  passport.authenticate("jwt", { session: false }),
+  reportController.getTaskCounts
+);
+
+/**
+ *  @swagger
+ *  /report/averagePerDayCompletedTasks:
+ *    get:
+ *      summary: Get the average completed tasks for a day
+ *      tags: [Reports]
+ *      responses:
+ *        200:
+ *          description: Success Response
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/AveragePerDayCompletedTasks'
+ *      security:
+ *       - BearerAuth: []
+ *
+ * components:
+ *   schemas:
+ *     AveragePerDayCompletedTasks:
+ *       type: object
+ *       properties:
+ *         averageTasksCompletedPerDay:
+ *           type: integer
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+router.get(
+  "/report/averagePerDayCompletedTasks",
+  passport.authenticate("jwt", { session: false }),
+  reportController.getAveragePerDayCompletedTasks
 );
 module.exports = router;
