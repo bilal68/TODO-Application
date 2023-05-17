@@ -612,4 +612,54 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   reportController.getTasksPerDayOfWeek
 );
+
+/**
+ *  @swagger
+ *  /report/duplicateTasks:
+ *    get:
+ *      summary: Get duplicate tasks based on titles
+ *      tags: [Reports]
+ *      responses:
+ *        200:
+ *          description: Success Response
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/DuplicateTasksResponse'
+ *      security:
+ *       - BearerAuth: []
+ *
+ * components:
+ *   schemas:
+ *     DuplicateTasksResponse:
+ *       type: object
+ *       properties:
+ *         tasks:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Task'
+ *     Task:
+ *       type: object
+ *       properties:
+ *         primaryTask:
+ *           $ref: '#/components/schemas/TaskDetails'
+ *         duplicateTasks:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/TaskDetails'
+ *     TaskDetails:
+ *       $ref: '#/components/schemas/Task'
+ *
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+router.get(
+  "/report/duplicateTasks",
+  passport.authenticate("jwt", { session: false }),
+  reportController.getDuplicateTasks
+);
 module.exports = router;
