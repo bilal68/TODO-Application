@@ -1,9 +1,12 @@
 import * as model from "../../models";
 import fs from "fs";
 import path from "path";
-import { successResponse, errorResponse } from "../../helpers";
+import moment from "moment";
+import { Op } from "sequelize";
+
 const archiver = require("archiver");
 
+import { successResponse, errorResponse } from "../../helpers";
 const { task, attachment } = model;
 
 export const create = async (req, res) => {
@@ -191,3 +194,21 @@ export const update = async (req, res) => {
   }
 };
 
+export const getTodaysTaskList = async () => {
+  try {
+    const startOfDay = moment().startOf("day").toDate();
+    const endOfDay = moment().endOf("day").toDate();
+    // Find tasks due on the current day
+    const tasks = await task.findAll({
+      where: {
+        due_date: {
+          [Op.gte]: startOfDay,
+          [Op.lt]: endOfDay,
+        },
+      },
+    });
+    return tasks;
+  } catch (error) {
+    throw Error(error);
+  }
+};

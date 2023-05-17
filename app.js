@@ -12,6 +12,7 @@ const swaggerUi = require("swagger-ui-express");
 dotenv.config();
 require("./src/config/sequelize");
 require("./src/config/passport");
+require("./src/crons/dailyReminder");
 
 const app = express();
 const swaggerJsdoc = require("swagger-jsdoc");
