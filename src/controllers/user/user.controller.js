@@ -47,3 +47,13 @@ export const resetPassword = async (req, res) => {
     return errorResponse(req, res, error.message);
   }
 };
+
+export const getUserEmail = async (id) => {
+  try {
+    let result = await model.user.findOne({ attributes: ['email']}, { where: { id: id } });
+
+    return result.toJSON();
+  } catch (error) {
+    throw Error(error);
+  }
+};

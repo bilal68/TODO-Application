@@ -168,3 +168,49 @@ export const getTasksPerDayOfWeek = async (req, res) => {
     return errorResponse(req, res, error.message);
   }
 };
+
+export const getDuplicateTasks = async (req, res) => {
+  try {
+    const duplicateTasks = await task.findAll({
+      where: {
+        title: {
+          [Op.in]: sequelize.literal(
+            `(SELECT title FROM task GROUP BY title HAVING COUNT(*) > 1)`
+          ),
+        },
+      },
+      order: [["createdAt", "ASC"]],
+    });
+
+    const tasks = [];
+
+    // Create a map to store the primary task for each title
+    const primaryTasksMap = new Map();
+
+    duplicateTasks.forEach((task) => {
+      if (!primaryTasksMap.has(task.title)) {
+        primaryTasksMap.set(task.title, {
+          primaryTask: task,
+          duplicateTasks: [],
+        });
+      } else {
+        // If the title is already in the map, it means the task is a duplicate
+        const primaryTaskData = primaryTasksMap.get(task.title);
+
+        primaryTaskData.duplicateTasks.push(task);
+      }
+    });
+    primaryTasksMap.forEach((value) => {
+      tasks.push(value);
+    });
+
+    return successResponse(req, res, {
+      message: "Success",
+      data: {
+        duplicateTasks: tasks,
+      },
+    });
+  } catch (error) {
+    return errorResponse(req, res, error.message);
+  }
+};
