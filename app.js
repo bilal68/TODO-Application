@@ -1,12 +1,13 @@
 import express from "express";
 import dotenv from "dotenv";
-
 import bodyParser from "body-parser";
 import cors from "cors";
 
 import publicRoutes from "./src/routes/public";
 import privateRoutes from "./src/routes/private";
 import errorHandler from "./src/middleware/errorHandler";
+import logger from "./src/middleware/logger";
+
 const swaggerUi = require("swagger-ui-express");
 
 dotenv.config();
@@ -55,6 +56,7 @@ app.use(
 app.use(cors());
 app.use(bodyParser.json());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiSpecification));
+app.use(logger);
 app.use(publicRoutes);
 app.use(privateRoutes);
 app.use(errorHandler);
