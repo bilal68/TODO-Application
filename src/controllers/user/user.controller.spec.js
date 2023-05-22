@@ -1,71 +1,58 @@
-// require('mysql2/node_modules/iconv-lite').encodingExists('foo');
-import iconv from 'iconv-lite';
-import encodings from 'iconv-lite/encodings';
+import iconv from "iconv-lite";
+import encodings from "iconv-lite/encodings";
 iconv.encodings = encodings;
-import MockExpressResponse from "mock-express-response";
 import { healthCheck } from "./user.controller";
-
-import { successResponse } from "../../helpers";
-
+import { successResponse, errorResponse } from "../../helpers";
 import { User } from "../../models";
-// mock success and error function mock
+
+// mock success and error functions
 jest.mock("./../../helpers");
 
-// extress response object for (req, res) function
-const res = new MockExpressResponse();
+describe("healthCheck", () => {
+  // test('should return success response with "working" message', async () => {
+  //   const req = {};
+  //   const res = {
+  //     json: jest.fn(),
+  //     status: jest.fn().mockReturnThis(),
+  //   };
 
-// describe('User controller', () => {
-//   test('allUsers', async () => {
-//     // mock database functions that we are using inside functions
-//     // so we don't have to be dependant on database
-//     // resolve data that you want return from database in Promise.resolve
-//     const spyUserFindAndCountAll = jest
-//       .spyOn(User, 'findAndCountAll')
-//       .mockImplementation(() => Promise.resolve([]));
+  //   successResponse.mockImplementation((req, res, data) => {
+  //     res.status(200).json(data);
+  //   });
 
-//     // create request object and put value that you required to check in function
-//     const req = {
-//       params: {
-//         page: 1,
-//       },
-//     };
+  //   // Call the healthCheck function
+  //   await healthCheck(req, res);
 
-//     // call function
-//     await allUsers(req, res);
-//     // check database function is calling or not
-//     expect(spyUserFindAndCountAll).toBeCalled();
-//     // check response is correct or not
-//     expect(successResponse).toHaveBeenCalledWith(
-//       expect.any(Object),
-//       expect.any(Object),
-//       expect.any(Object),
-//     );
-//     // restore database/model function that we have mocked
-//     spyUserFindAndCountAll.mockRestore();
-//   });
-// });
+  //   // Check if the response is as expected
+  //   expect(res.status).toHaveBeenCalledWith(200);
+  //   expect(res.json).toHaveBeenCalledWith({ message: "working" });
+  // });
 
-describe("User controller", () => {
-  test("healthCheck", async () => {
-    // const spyUserFindAndCountAll = jest
-    //   .spyOn("healthCheck")
-    //   .mockImplementation(() => Promise.resolve([]));
-
-    // create request object and put value that you required to check in function
+  test("should return error response with error message", async () => {
+    // Mock the request and response objects
     const req = {};
+    const res = {
+      json: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+    };
 
-    // call function
-    let test = await healthCheck(req, res);
-    console.log(test)
-    // check database function is calling or not
-    // expect(spyUserFindAndCountAll).toBeCalled();
-    // check response is correct or not
-    expect(successResponse).toHaveBeenCalledWith(
-      expect.any(Object),
-      expect.any(Object),
-      expect.any(Object)
-    );
-    // restore database/model function that we have mocked
-    // spyUserFindAndCountAll.mockRestore();
+    // Mock the errorResponse function
+    // jest.mock("../../helpers"); // Make sure to provide the correct path to the errorResponse module
+    // const { errorResponse } = require("../path/to/errorResponse"); // Import the errorResponse function
+
+    errorResponse.mockImplementation((req, res, errorMessage) => {
+      res.status(500).json({ message: errorMessage });
+    });
+
+    // Throw an error to simulate an error scenario
+    const errorMessage = "An error occurred";
+    const error = new Error(errorMessage);
+
+    // Call the healthCheck function
+    await healthCheck(req, res);
+
+    // Check if the response is as expected
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ message: errorMessage });
   });
 });

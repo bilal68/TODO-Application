@@ -19,24 +19,36 @@ async function initialize() {
     user: username,
     password,
   });
- await connection
+  await connection
     .promise()
     .query(`CREATE DATABASE IF NOT EXISTS \`${database}\`;`);
 }
+
 // Connect to DB
-sequelize = new Sequelize(
-  config.database,
-  config.username,
-  config.password,
-  config
-);
+sequelize = new Sequelize(config.database, config.username, config.password, {
+  dialect: "mysql",
+  dialectOptions: {
+    authSwitchHandler: (data, callback) => {
+      if (data.pluginName === "mysql_clear_password") {
+        // Use the mysql_clear_password authentication plugin
+        callback(null, Buffer.from(password + "\0"));
+      } else {
+        callback(new Error("Unsupported authentication plugin"));
+      }
+    },
+  },
+});
+
 fs.readdirSync(__dirname)
   .filter(
     (file) =>
       file.indexOf(".") !== 0 && file !== basename && file.slice(-3) === ".js"
   )
   .forEach((file) => {
-    const model = sequelize.import(path.join(__dirname, file));
+    const model = require(path.join(__dirname, file))(
+      sequelize,
+      Sequelize.DataTypes
+    );
     db[model.name] = model;
   });
 
