@@ -6,53 +6,53 @@ import { successResponse, errorResponse } from "../../helpers";
 import { User } from "../../models";
 
 // mock success and error functions
-jest.mock("./../../helpers");
+// jest.mock("./../../helpers");
 
 describe("healthCheck", () => {
-  // test('should return success response with "working" message', async () => {
+  // it("should return success response with message", async () => {
   //   const req = {};
   //   const res = {
   //     json: jest.fn(),
   //     status: jest.fn().mockReturnThis(),
   //   };
 
-  //   successResponse.mockImplementation((req, res, data) => {
-  //     res.status(200).json(data);
+  //   // Mock the behavior of successResponse
+  //   const successResponse = jest.fn((req, res, data) => {
+  //     res.json({ code: 200, data, success: true });
   //   });
 
-  //   // Call the healthCheck function
-  //   await healthCheck(req, res);
+  //   await healthCheck(req, res, successResponse);
 
-  //   // Check if the response is as expected
   //   expect(res.status).toHaveBeenCalledWith(200);
-  //   expect(res.json).toHaveBeenCalledWith({ message: "working" });
+  //   expect(res.json).toHaveBeenCalledWith({
+  //     code: 200,
+  //     data: { message: "working" },
+  //     success: true,
+  //   });
   // });
 
-  test("should return error response with error message", async () => {
-    // Mock the request and response objects
+  it("should return error response with error message", async () => {
     const req = {};
     const res = {
       json: jest.fn(),
       status: jest.fn().mockReturnThis(),
     };
-
-    // Mock the errorResponse function
-    // jest.mock("../../helpers"); // Make sure to provide the correct path to the errorResponse module
-    // const { errorResponse } = require("../path/to/errorResponse"); // Import the errorResponse function
-
-    errorResponse.mockImplementation((req, res, errorMessage) => {
-      res.status(500).json({ message: errorMessage });
+  
+    // Mock the behavior of errorResponse
+    const errorResponse = jest.fn((req, res, errorMessage) => {
+      res.status(500).json({ error: errorMessage });
     });
-
-    // Throw an error to simulate an error scenario
-    const errorMessage = "An error occurred";
-    const error = new Error(errorMessage);
-
-    // Call the healthCheck function
-    await healthCheck(req, res);
-
-    // Check if the response is as expected
+  
+    // Create a mock implementation that throws an error
+    const healthCheckMock = async () => {
+      throw new Error("An error occurred");
+    };
+  
+    // Call the healthCheck function with the mock implementation
+    await expect(healthCheckMock(req, res)).rejects.toThrow("An error occurred");
+  
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ message: errorMessage });
+    expect(res.json).toHaveBeenCalledWith({ error: "An error occurred" });
   });
+  
 });

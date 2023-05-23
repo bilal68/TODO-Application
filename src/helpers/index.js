@@ -2,7 +2,12 @@ import bcrypt from "bcrypt";
 import multer from "multer";
 
 export const successResponse = (req, res, data, code = 200) =>
-  res.send({
+  // res.send({
+  //   code,
+  //   data,
+  //   success: true,
+  // });
+  res.status(code).json({
     code,
     data,
     success: true,
@@ -22,6 +27,13 @@ export const errorResponse = (
     data: null,
     success: false,
   });
+// res.send({
+//   code,
+//   errorMessage,
+//   error,
+//   data: null,
+//   success: false,
+// });
 
 export const validateFields = (object, fields) => {
   const errors = [];
