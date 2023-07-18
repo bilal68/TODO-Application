@@ -38,6 +38,7 @@ export const getTaskCounts = async (req, res) => {
         completedTasks: +completedTasks,
         remainingTasks: +remainingTasks,
       },
+      // lets test
     });
   } catch (error) {
     return errorResponse(req, res, error.message);
